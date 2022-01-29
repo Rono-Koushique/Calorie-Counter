@@ -1,0 +1,180 @@
+{% extends 'app_calorie/base.html' %}
+{% load static %}
+
+{% comment %} custom static in head {% endcomment %}
+{% block custom_static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'app_calorie/index.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+{% endblock custom_static %}
+
+
+{% comment %} body content {% endcomment %}
+{% block content %}
+    <div class="container mt-3">
+        {% comment %} calorie goal progress bar {% endcomment %}
+        <div class="row align-items-center">
+            <div class="col-2">
+                <h5>Calorie Goal</h5>
+            </div>
+            <div class="col-10">
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 20%" 
+                    aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row gx-5">
+            {% comment %} consumption table {% endcomment %}
+            <div class="col-7 p-4 mb-5 mt-3 border bg-white rounded overflow-auto table-back">
+                {% comment %} selecting food {% endcomment %}
+                <div class="row">
+                    <div class="col-12">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {% comment %} label {% endcomment %}
+                            <div class="row form-group align-items-center">
+                                <div class="col-3 d-flex">
+                                    <label>
+                                        <h5>Select Food</h5>
+                                    </label>
+                                </div>
+
+                                {% comment %} select form {% endcomment %}
+                                <div class="col-7">
+                                    <select class="form-select w-100 d-flex justify-content-center" aria-label="Default select example" name="food-consumed" id="food-consumed" style="width:initial;">
+                                        {% for food in foods %}            
+                                            <option value="{{ food.name }}">
+                                                {{ food.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                {% comment %} add button {% endcomment %}
+                                <div class="col-2">
+                                    <button class="btn btn-success w-100" type="submit">Add</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+                {% comment %} food table {% endcomment %}
+                <br><div>
+                    <h4>Today's Consumption</h4>
+                </div>
+
+                <div class="class-holder">
+                    <table class="table table-bordered" id="table">
+                        <tr class="">
+                            <th class="custom-cell">Item</th>
+                            <th class="custom-cell">Carbs (gm)</th>
+                            <th class="custom-cell">Protein (gm)</th>
+                            <th class="custom-cell">Fats (gm)</th>
+                            <th class="custom-cell">Calories (Kcal)</th>
+                            <th class="custom-cell">Remove Item</th>
+                        </tr>
+    
+                        {% for food in consumed_food %}
+                            <tr>
+                                <td>{{ food.food_consumed }}</td>
+                                <td class="custom-cell">{{ food.food_consumed.carbohydrate }}</td>
+                                <td class="custom-cell">{{ food.food_consumed.protein }}</td>
+                                <td class="custom-cell">{{ food.food_consumed.fats }}</td>
+                                <td class="custom-cell">{{ food.food_consumed.calorie }}</td>
+                                <td class="custom-cell"><a class="btn btn-danger" href="{% url 'calorie-delete' food.id %}">Remove</a></td>
+                            </tr>
+                        {% endfor %}
+    
+                        <tr>
+                            <td class="last-row-elements">Total</td>
+                            <td class="last-row-elements custom-cell" id="total-carbs"></td>
+                            <td class="last-row-elements custom-cell" id="total-protein"></td>
+                            <td class="last-row-elements custom-cell" id="total-fats"></td>
+                            <td class="last-row-elements custom-cell" id="total-calories"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+
+            {% comment %} consumption chart {% endcomment %}
+            <div class="col-5 p-3 mb-5 bg-white rounded chart-back">
+                <div class="">
+                    <h4>Today's Breakdown</h4>
+                </div>
+                <canvas id="myChart" width="400" height="400"></canvas>    
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        {% comment %} calculating total tutritions {% endcomment %}
+        var table = document.getElementById("table");
+        var carbs = 0, protein = 0, fats = 0, calories = 0;
+
+        for (var i=1; i<table.rows.length-1; i++) {
+            carbs += parseFloat(table.rows[i].cells[1].innerHTML);
+            protein += parseFloat(table.rows[i].cells[2].innerHTML);
+            fats += parseFloat(table.rows[i].cells[3].innerHTML);
+            calories += parseFloat(table.rows[i].cells[4].innerHTML);
+        }
+        carbs = Math.round(carbs);
+        protein = Math.round(protein);
+        fats = Math.round(fats);
+        calories = Math.round(calories);
+
+        document.getElementById("total-carbs").innerHTML = carbs;
+        document.getElementById("total-protein").innerHTML = protein;
+        document.getElementById("total-fats").innerHTML = fats;
+        document.getElementById("total-calories").innerHTML = calories;
+
+
+        {% comment %} progress bar js {% endcomment %}
+        var cal_per = calories/2000 * 100;
+        document.getElementsByClassName("progress-bar")[0].setAttribute("style", "width:"+cal_per+"%");
+    </script>
+
+
+    <script>
+        {% comment %} chart js {% endcomment %}
+        var total = carbs + protein + fats;
+        var carbs_percent = Math.round((carbs/total)*100);
+        var protein_percent = Math.round((protein/total)*100);
+        var fats_percent = Math.round((fats/total)*100);
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [`Carbs ${carbs_percent}%`, `Protein ${protein_percent}%`, `Fats ${fats_percent}%`],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [carbs_percent, protein_percent, fats_percent],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+{% endblock content %}

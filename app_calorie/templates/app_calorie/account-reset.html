@@ -1,0 +1,17 @@
+{% extends 'app_calorie/base.html' %}
+{% load static %}
+
+{% block custom_static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'app_calorie/delete.css' %}">
+{% endblock custom_static %}
+
+{% block content %}
+    <br>
+    <div class="container">
+        <form method="POST">
+            {% csrf_token %}
+            Are you sure to reset your account ?
+            <input type="submit">
+        </form>
+    </div>
+{% endblock content %}

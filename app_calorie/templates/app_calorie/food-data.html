@@ -1,0 +1,34 @@
+{% extends 'app_calorie/base.html' %}
+{% load static %}
+
+{% block custom_static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'app_calorie/food-data.css' %}">
+{% endblock custom_static %}
+
+{% block content %}
+    <br>
+    <div class="container">
+        <h4>Food data</h4>
+        <table class="table table-bordered" id="table">
+            <tr class="">
+                <th class="custom-cell">Item</th>
+                <th class="custom-cell">Carbs (gm)</th>
+                <th class="custom-cell">Protein (gm)</th>
+                <th class="custom-cell">Fats (gm)</th>
+                <th class="custom-cell">Calories (Kcal)</th>
+            </tr>
+
+            <tr>
+                {% for food in foods %}
+                    <tr>
+                        <td>{{ food.name }}</td>
+                        <td class="custom-cell">{{ food.carbohydrate }}</td>
+                        <td class="custom-cell">{{ food.protein }}</td>
+                        <td class="custom-cell">{{ food.fats }}</td>
+                        <td class="custom-cell">{{ food.calorie }}</td>
+                    </tr>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+{% endblock content %}

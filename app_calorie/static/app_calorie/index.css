@@ -1,0 +1,25 @@
+html, body {
+    height: 100vh !important;
+}
+
+.last-row-elements {
+    font-weight: 600;
+}
+
+.custom-cell {
+    text-align: center;
+}
+
+.chart-back {
+    margin: 0 !important;
+}
+
+.table-back {
+    height: 510px;
+    margin-bottom: 0 !important;
+}
+
+.class-holder {
+    overflow: auto;
+    height: 354px;
+}
