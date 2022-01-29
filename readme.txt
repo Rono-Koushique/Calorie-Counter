@@ -1,26 +1,14 @@
 **** Info ****
 
-1. This is a html generator system designed using django
-2. A custom form was made using the charfield form from "CKEditor"
-3. The app ('HTML_generator') can be integrated to any django project
+1. This is a calorie counter designed using django
+2. It keeps the nutrition count of a single day of all the users
+3. After 1 day the user needs to reset it manually
 4. Frontend is created using HTML, CSS and bootstrap
+5. A superuser already exist with the following credentials
+	username: "user"
+	password: "jkl"
+	email: "user@gmail.com"
 
-
-**** Project workflow ****
-
-1. Created django project "Text_html"
-2. Created django app HTML_generator"
-3. Added the app in project settings
-4. Created "urls.py" in the app
-5. Included the app urls in project urls
-6. Created the custom model "Content"
-7. Added the model in admin.py
-8. Created a custom form using CKEditor's RichTextField
-9. Created the frontend
-10. Used javascript to fetch data from the form and returned the HTML text from it.
-
-
-**** Ideas ****
-
-1. The admin.py should contain each custom models for it to show in django admin panel
-2. "admin.site.register(Content)" here 'Content' is the custom model
+6. A few food items are already registered in the app
+7. To add more food item, go to the admin panel of the app "/admin"
+8. A previously created login app was integrated in this system
